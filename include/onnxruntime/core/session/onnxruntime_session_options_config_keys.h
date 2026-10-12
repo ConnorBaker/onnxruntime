@@ -488,18 +488,19 @@ static const char* const kOrtSessionOptionsCudaFpAIntBGemvWaveAware = "ep.cuda.f
 /// estimation using this bound; "0" or unset (default) leaves non-windowed estimation unavailable.
 /// The estimate also covers the allocated past cache capacity if it exceeds this envelope.
 /// Windowed estimation continues to use the cache capacity instead.
-/// A nonnegative decimal int64 is required; "0" or unset (default) means unspecified.
-/// Negative, malformed, or overflowing explicit values cause INVALID_ARGUMENT when creating
-/// resource accountants. This is not a runtime-enforced input limit or a no-OOM guarantee.
+/// A decimal integer in [0, INT32_MAX] is required; "0" or unset (default) means unspecified.
+/// Invalid explicit values cause INVALID_ARGUMENT during session or resource-accountant creation.
+/// This is not a runtime-enforced input limit or a no-OOM guarantee.
 static const char* const kOrtSessionOptionsCudaGqaWorkspaceMaxTotalSequenceLength =
     "ep.cuda.gqa_workspace_max_total_sequence_length";
 
-/// Reader-only, hardware-neutral kernel dispatch intent shared across operators and EPs.
-/// "latency", "memory", and "safe" are parsed and retained for future policy resolution.
+/// Hardware-neutral kernel dispatch intent shared across operators and EPs.
 /// Unset, empty, or unrecognized values map to "auto"; matching is case-sensitive.
-/// CUDA GroupQueryAttention Level-1 estimation is the first consumer; sizing does not use it.
-/// No value changes runtime dispatch, workspace estimates, or partitioning, and this option
-/// does not enforce a workload envelope or memory budget or provide a no-OOM guarantee.
+/// CUDA GroupQueryAttention is the first enforcing consumer: "latency" preserves its current
+/// route priority, "memory" commits the smallest analytically bounded prompt/decode route set,
+/// and "safe" permits only analytically bounded routes. A non-auto policy fails closed when
+/// no committed route can serve a run. The option does not by itself enforce a workload
+/// envelope or memory budget or provide a no-OOM guarantee.
 static const char* const kOrtSessionOptionsKernelDispatchPolicy = "session.kernel_dispatch_policy";
 
 /// Maximum number of rows of input A per CUDA MatMulNBits fpA_intB GEMM launch. Values below 8192 are
