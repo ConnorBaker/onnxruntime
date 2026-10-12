@@ -546,7 +546,8 @@ Status CreateAccountants(
     std::optional<ResourceAccountantMap>& acc_map) {
   WorkspaceEstimatorConfig estimator_config{
       config_options.GetConfigEntry(kOrtSessionOptionsCudaFpAIntBGemm),
-      config_options.GetConfigEntry(kOrtSessionOptionsCudaFpAIntBProfileM)};
+      config_options.GetConfigEntry(kOrtSessionOptionsCudaFpAIntBProfileM),
+      config_options.GetConfigEntry(kOrtSessionOptionsCudaMatMulNBitsMChunkSize)};
   if (const auto knob =
           config_options.GetConfigEntry(kOrtSessionOptionsCudaGqaWorkspaceMaxTotalSequenceLength);
       knob.has_value()) {
